@@ -2,7 +2,7 @@
 
 A read-only web service built with Express and MongoDB that returns book records as JSON.
 
-**Deployed URL:** https://YOUR-RENDER-SERVICE.onrender.com
+**Deployed URL:** https://cse341-books-mn20.onrender.com
 
 ## Endpoints
 
