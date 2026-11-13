@@ -12,3 +12,9 @@ export async function getAllBooks() {
     .sort({ id: 1 })
     .toArray();
 }
+
+export async function getBookById(id) {
+  return getDb()
+    .collection(COLLECTION)
+    .findOne({ id }, { projection: PUBLIC_FIELDS });
+}
