@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { listBooks, getBook } from './controllers/books.js';
+import {
+  listBooks,
+  getBook,
+  createBook,
+  updateBook,
+  deleteBook
+} from './controllers/books.js';
 import {
   listAuthors,
   getAuthor,
@@ -10,8 +16,170 @@ import {
 
 const router = Router();
 
+/**
+ * @openapi
+ * /books:
+ *   get:
+ *     summary: Get all books
+ *     tags:
+ *       - Books
+ *     responses:
+ *       200:
+ *         description: A list of books, sorted by id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Book'
+ *       500:
+ *         description: Unexpected server or database error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Message'
+ *   post:
+ *     summary: Create a book
+ *     description: The authorId must match the id of an existing author.
+ *     tags:
+ *       - Books
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Book'
+ *           example:
+ *             id: b4
+ *             authorId: a1
+ *             title: Example Book Title
+ *             publicationDate: '2026-01-15'
+ *     responses:
+ *       201:
+ *         description: The newly created book
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Book'
+ *       400:
+ *         description: A required field is missing or invalid, the id already exists, or the authorId does not match an existing author
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
+ *       500:
+ *         description: Unexpected server or database error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Message'
+ */
 router.get('/books', listBooks);
+router.post('/books', createBook);
+
+/**
+ * @openapi
+ * /books/{id}:
+ *   parameters:
+ *     - in: path
+ *       name: id
+ *       required: true
+ *       description: The book's custom id, such as b1
+ *       schema:
+ *         type: string
+ *         example: b1
+ *   get:
+ *     summary: Get one book by id
+ *     tags:
+ *       - Books
+ *     responses:
+ *       200:
+ *         description: The matching book
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Book'
+ *       404:
+ *         description: No book exists with that id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Message'
+ *             example:
+ *               message: Book not found
+ *       500:
+ *         description: Unexpected server or database error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Message'
+ *   put:
+ *     summary: Update a book
+ *     description: Replaces the book's authorId, title and publicationDate. The id in the URL cannot be changed, and the authorId must match an existing author.
+ *     tags:
+ *       - Books
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/BookInput'
+ *           example:
+ *             authorId: a2
+ *             title: Updated Book Title
+ *             publicationDate: '2026-02-20'
+ *     responses:
+ *       200:
+ *         description: The updated book
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Book'
+ *       400:
+ *         description: A required field is missing or invalid, or the authorId does not match an existing author
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
+ *       404:
+ *         description: No book exists with that id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Message'
+ *             example:
+ *               message: Book not found
+ *       500:
+ *         description: Unexpected server or database error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Message'
+ *   delete:
+ *     summary: Delete a book
+ *     tags:
+ *       - Books
+ *     responses:
+ *       204:
+ *         description: The book was deleted (no response body)
+ *       404:
+ *         description: No book exists with that id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Message'
+ *             example:
+ *               message: Book not found
+ *       500:
+ *         description: Unexpected server or database error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Message'
+ */
 router.get('/books/:id', getBook);
+router.put('/books/:id', updateBook);
+router.delete('/books/:id', deleteBook);
 
 /**
  * @openapi
