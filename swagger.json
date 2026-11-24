@@ -1,0 +1,396 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Books API",
+    "version": "2.0.0",
+    "description": "CSE 341 Books and Authors API. Books reference authors through authorId, which must match the id of an existing author."
+  },
+  "tags": [
+    {
+      "name": "Authors",
+      "description": "Create, read, update and delete authors"
+    },
+    {
+      "name": "Books",
+      "description": "Create, read, update and delete books"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Author": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "birthYear"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1"
+          },
+          "name": {
+            "type": "string",
+            "example": "Maya Rivera"
+          },
+          "birthYear": {
+            "type": "integer",
+            "example": 1984
+          }
+        }
+      },
+      "AuthorInput": {
+        "type": "object",
+        "required": [
+          "name",
+          "birthYear"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Updated Author"
+          },
+          "birthYear": {
+            "type": "integer",
+            "example": 1981
+          }
+        }
+      },
+      "Book": {
+        "type": "object",
+        "required": [
+          "id",
+          "authorId",
+          "title",
+          "publicationDate"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b1"
+          },
+          "authorId": {
+            "type": "string",
+            "example": "a1"
+          },
+          "title": {
+            "type": "string",
+            "example": "Patterns of Light"
+          },
+          "publicationDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2021-08-17"
+          }
+        }
+      },
+      "BookInput": {
+        "type": "object",
+        "required": [
+          "authorId",
+          "title",
+          "publicationDate"
+        ],
+        "properties": {
+          "authorId": {
+            "type": "string",
+            "example": "a2"
+          },
+          "title": {
+            "type": "string",
+            "example": "Updated Book Title"
+          },
+          "publicationDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-02-20"
+          }
+        }
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Internal server error"
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Invalid author data"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "name is required and must be a non-empty string"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/authors": {
+      "get": {
+        "summary": "Get all authors",
+        "tags": [
+          "Authors"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of authors, sorted by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Author"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server or database error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create an author",
+        "tags": [
+          "Authors"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Author"
+              },
+              "example": {
+                "id": "a4",
+                "name": "Example Author",
+                "birthYear": 1980
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The newly created author",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Author"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A required field is missing or invalid, or the id already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server or database error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/authors/{id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "description": "The author's custom id, such as a1",
+          "schema": {
+            "type": "string",
+            "example": "a1"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get one author by id",
+        "tags": [
+          "Authors"
+        ],
+        "responses": {
+          "200": {
+            "description": "The matching author",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Author"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No author exists with that id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "example": {
+                  "message": "Author not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server or database error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an author",
+        "description": "Replaces the author's name and birthYear. The id in the URL cannot be changed.",
+        "tags": [
+          "Authors"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorInput"
+              },
+              "example": {
+                "name": "Updated Author",
+                "birthYear": 1981
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated author",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Author"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A required field is missing or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No author exists with that id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "example": {
+                  "message": "Author not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server or database error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an author",
+        "description": "An author who still has books cannot be deleted.",
+        "tags": [
+          "Authors"
+        ],
+        "responses": {
+          "204": {
+            "description": "The author was deleted (no response body)"
+          },
+          "404": {
+            "description": "No author exists with that id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "example": {
+                  "message": "Author not found"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The author still has books",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "example": {
+                  "message": "Cannot delete an author who still has books. Delete or reassign those books first."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server or database error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

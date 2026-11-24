@@ -1,21 +1,24 @@
 {
   "name": "cse341-books",
   "version": "1.0.0",
-  "description": "Read-only Books web service built with Express and MongoDB",
+  "description": "Books and Authors web service built with Express, MongoDB and Swagger",
   "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node --env-file=.env server.js",
     "dev": "nodemon --env-file=.env server.js",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "swagger": "node scripts/swagger.js"
   },
   "keywords": [],
   "author": "Prosper Opara",
   "license": "ISC",
   "dependencies": {
     "express": "^5.1.0",
-    "mongodb": "^6.18.0"
+    "mongodb": "^6.18.0",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
